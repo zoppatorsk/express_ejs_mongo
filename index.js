@@ -5,6 +5,8 @@ const compression = require("compression");
 const app = express();
 const helmet = require("helmet");
 
+const db = require("./modules/db");
+
 //register middlewares
 app.use(helmet()); //sets security headers
 app.use(compression()); //activate compression for req/res
@@ -25,5 +27,7 @@ app.get("/", async function (req, res) {
 	return res.render("pages/index", payload);
 });
 
-app.listen(process.env.APP_PORT);
-console.log(`Server is listening on port ${process.env.APP_PORT}`);
+const port = process.env.APP_PORT; //sets listening port
+db.connect()
+	.then(() => app.listen(port, () => console.log(`listening on port ${port}`)))
+	.catch((err) => console.error("Could not start server, reason: " + err));
